@@ -28,23 +28,18 @@ uses: actions/checkout@v4
     run: |
       mkdir -p project
       unzip -o AutoFishAndroid_source.zip -d project
-      find project -maxdepth 4 -type f
 
   - name: Build APK
+    run: gradle -p project assembleDebug --stacktrace
+
+  - name: Check for APK
     run: |
-      set -euo pipefail
-      gradle -p project assembleDebug --stacktrace
-      mkdir -p dist
-      APK="$(find project -type f -name '*.apk' | head -n 1)"
-      if [ -z "$APK" ]; then
-        echo "ERROR: APK was not created"
-        exit 1
-      fi
-      cp "$APK" dist/AutoFishAndroid-debug.apk
+      find project -type f -name '*.apk'
+      test -n "$(find project -type f -name '*.apk' -print -quit)"
 
   - name: Upload APK
     uses: actions/upload-artifact@v4
     with:
       name: AutoFishAndroid-APK
-      path: dist/AutoFishAndroid-debug.apk
+      path: project/app/build/outputs/apk/debug/*.apk
       if-no-files-found: error

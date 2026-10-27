@@ -1,45 +1,39 @@
 name: Build AutoFishAndroid APK
 
-on:
-workflow_dispatch:
-push:
-branches:
-- main
+'on':
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-build:
-runs-on: ubuntu-latest
-steps:
-- name: Checkout repository
-uses: actions/checkout@v4
-
-  - name: Set up Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
-
-  - name: Set up Gradle
-    uses: gradle/actions/setup-gradle@v4
-    with:
-      gradle-version: '8.9'
-
-  - name: Extract Android project
-    run: |
-      mkdir -p project
-      unzip -o AutoFishAndroid_source.zip -d project
-
-  - name: Build APK
-    run: gradle -p project assembleDebug --stacktrace
-
-  - name: Check for APK
-    run: |
-      find project -type f -name '*.apk'
-      test -n "$(find project -type f -name '*.apk' -print -quit)"
-
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: AutoFishAndroid-APK
-      path: project/app/build/outputs/apk/debug/*.apk
-      if-no-files-found: error
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Extract Android project
+        run: |
+          mkdir -p project
+          unzip -o AutoFishAndroid_source.zip -d project
+      - name: Build APK
+        run: gradle -p project assembleDebug --stacktrace
+      - name: Check for APK
+        run: |
+          find project -type f -name '*.apk'
+          test -n "$(find project -type f -name '*.apk' -print -quit)"
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AutoFishAndroid-APK
+          path: project/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
